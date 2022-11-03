@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Confluence to AsciiDoc",
   "main": "confluence-to-asciidoc.ts",
+  "bin": "./confluence-to-asciidoc.js",
   "scripts": {
     "login": "playwright open --save-storage=auth.json",
     "hooks:install": "husky install",
