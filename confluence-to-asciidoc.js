@@ -18,7 +18,7 @@ const {launchBrowser} = require("./libs/utils");
         })
         .option('output', {
             type: 'string',
-            description: 'file output to save',
+            description: 'path to save the files',
         })
         .option('login', {
             type: 'boolean',
@@ -26,6 +26,22 @@ const {launchBrowser} = require("./libs/utils");
             default: false,
         })
         .parseAsync();
+
+
+    if (!options.import.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi)) {
+        console.error("url is not valid: --import", options.import);
+        process.exit(1);
+    }
+
+    if (existsSync(options.output)) {
+        console.error("folder does not exist: --output", options.output);
+        process.exit(1);
+    }
+
+    if ((await fs.lstat(options.output)).isDirectory()) {
+        console.error("path provided is not a folder: --output", options.output);
+        process.exit(1);
+    }
 
     if (!existsSync(path.join(__dirname, 'auth.json')) || options.login) {
         console.log("It seems that you're not login to confluence")
@@ -40,7 +56,16 @@ const {launchBrowser} = require("./libs/utils");
     const {page, browser} = await launchBrowser({headed: false, devtools: false});
 
     await page.goto(options.import);
+    const titleSelector = await page.locator('#title-text').first();
     const contentSelector = await page.locator('#content').first();
+
+    const kebabCase = string => {
+        return string.replace(/\W+/g, " ")
+            .split(/ |\B(?=[A-Z])/)
+            .map(word => word.toLowerCase())
+            .join('-');
+    };
+    const title = titleSelector.innerText();
 
     const tmpHtml = path.join(os.tmpdir(), 'tmp.html');
     await fs.writeFile(tmpHtml, await contentSelector.innerHTML())
@@ -54,5 +79,5 @@ const {launchBrowser} = require("./libs/utils");
         stdio: 'pipe'
     });
 
-    await fs.writeFile(options.output, pandoc.stdout)
+    await fs.writeFile(path.join(options.output, `${kebabCase(title)}.adoc`), pandoc.stdout)
 })()

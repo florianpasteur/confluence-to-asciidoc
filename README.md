@@ -10,7 +10,7 @@ Options:
   --help     Show help                                                 [boolean]
   --version  Show version number                                       [boolean]
   --import   url of the page to import                                  [string]
-  --output   file output to save                                        [string]
+  --output   path to save the files                                     [string]
   --login    run login mechanism                      [boolean] [default: false]
  
 ```
