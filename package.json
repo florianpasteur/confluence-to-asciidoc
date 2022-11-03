@@ -35,5 +35,8 @@
     "AsciiDoc"
   ],
   "author": "Florian Pasteur <florian.c.p@pm.me>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^8.0.1"
+  }
 }
