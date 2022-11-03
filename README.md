@@ -7,11 +7,13 @@ Tools that helps you download confluence page to asciidoc
 > confluence-to-asciidoc --help
 
 Options:
-  --help     Show help                                                 [boolean]
-  --version  Show version number                                       [boolean]
-  --import   url of the page to import                                  [string]
-  --output   path to save the files                                     [string]
-  --login    run login mechanism                      [boolean] [default: false]
+  --help      Show help                                                [boolean]
+  --version   Show version number                                      [boolean]
+  --import    url of the page to import                                 [string]
+  --output    path to save the files                                    [string]
+  --login     run login mechanism                     [boolean] [default: false]
+  --headed    run with headed browser                 [boolean] [default: false]
+  --devtools  run with open devtools browser          [boolean] [default: false]
  
 ```
 <!-- end-command-documentation -->

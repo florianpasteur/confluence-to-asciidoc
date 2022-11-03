@@ -1,7 +1,10 @@
 const playwright = require('playwright');
 
-async function launchBrowser() {
-    const chrome = await playwright.chromium.launch({headless: false, devtools: true});
+async function launchBrowser(options) {
+    const chrome = await playwright.chromium.launch({
+        headless: !(options.headed || Boolean(process.env.HEADED)),
+        devtools: options.devtools || Boolean(process.env.DEVTOOLS),
+    });
     const context = await chrome.newContext({storageState: __dirname + '/../auth.json'});
     const page = await context.newPage();
     const browser = context.browser();

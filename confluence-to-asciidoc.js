@@ -25,6 +25,16 @@ const {launchBrowser} = require("./libs/utils");
             description: 'run login mechanism',
             default: false,
         })
+        .option('headed', {
+            type: 'boolean',
+            description: 'run with headed browser',
+            default: false,
+        })
+        .option('devtools', {
+            type: 'boolean',
+            description: 'run with open devtools browser',
+            default: false,
+        })
         .parseAsync();
 
 
@@ -33,12 +43,13 @@ const {launchBrowser} = require("./libs/utils");
         process.exit(1);
     }
 
-    if (existsSync(options.output)) {
+    if (!existsSync(options.output)) {
         console.error("folder does not exist: --output", options.output);
         process.exit(1);
     }
 
-    if ((await fs.lstat(options.output)).isDirectory()) {
+    let stats = await fs.lstat(options.output);
+    if (!(stats.isDirectory())) {
         console.error("path provided is not a folder: --output", options.output);
         process.exit(1);
     }
@@ -53,7 +64,7 @@ const {launchBrowser} = require("./libs/utils");
         });
     }
 
-    const {page, browser} = await launchBrowser({headed: false, devtools: false});
+    const {page, browser} = await launchBrowser(options);
 
     await page.goto(options.import);
     const titleSelector = await page.locator('#title-text').first();
@@ -61,11 +72,11 @@ const {launchBrowser} = require("./libs/utils");
 
     const kebabCase = string => {
         return string.replace(/\W+/g, " ")
-            .split(/ |\B(?=[A-Z])/)
+            .split(/ +/)
             .map(word => word.toLowerCase())
             .join('-');
     };
-    const title = titleSelector.innerText();
+    const title = await titleSelector.innerText();
 
     const tmpHtml = path.join(os.tmpdir(), 'tmp.html');
     await fs.writeFile(tmpHtml, await contentSelector.innerHTML())
