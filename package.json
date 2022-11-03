@@ -4,7 +4,9 @@
   "description": "Confluence to AsciiDoc",
   "main": "confluence-to-asciidoc.ts",
   "scripts": {
-    "login": "playwright open --save-storage=auth.json"
+    "login": "playwright open --save-storage=auth.json",
+    "hooks:install": "husky install",
+    "hooks:pre-commit": "node .husky/pre-commit.js"
   },
   "dependencies": {
     "@npmcli/promise-spawn": "^3.0.0",

@@ -4,7 +4,15 @@ Tools that helps you download confluence page to asciidoc
 
 <!-- command-documentation -->
 ```
+> confluence-to-asciidoc --help
 
+Options:
+  --help     Show help                                                 [boolean]
+  --version  Show version number                                       [boolean]
+  --import   url of the page to import                                  [string]
+  --output   file output to save                                        [string]
+  --login    run login mechanism                      [boolean] [default: false]
+ 
 ```
 <!-- end-command-documentation -->
 
