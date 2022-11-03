@@ -1,0 +1,38 @@
+{
+  "name": "confluence-to-asciidoc",
+  "version": "1.0.0",
+  "description": "Confluence to AsciiDoc",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.24.2",
+    "@types/inquirer": "^8.2.1",
+    "@types/node": "^17.0.21",
+    "@types/yargs": "^17.0.10",
+    "axios": "^0.27.2",
+    "chalk": "4.x.x",
+    "highlight.js": "^11.4.0",
+    "inquirer": "^8.2.4",
+    "jsdom": "^18.0.0",
+    "marked": "4.x.x",
+    "marked-terminal": "^5.1.1",
+    "pkg": "^5.8.0",
+    "playwright": "^1.24.2",
+    "simple-git": "^3.2.6",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4",
+    "yargs": "^17.5.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-personal:florianpasteur/confluence-to-asciidoc.git"
+  },
+  "keywords": [
+    "Confluence",
+    "AsciiDoc"
+  ],
+  "author": "Florian Pasteur <florian.c.p@pm.me>",
+  "license": "MIT"
+}
