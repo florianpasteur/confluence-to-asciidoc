@@ -115,22 +115,12 @@ const {launchBrowser, wait} = require("./libs/utils");
         // delete icon wrapper
         document.querySelectorAll('#iconWrapper').forEach(e => {
             e.remove();
-            debugger
         })
-        debugger
     });
 
     const contentSelector = await page.locator('#content').first();
-
-
     const tmpHtml = path.join(os.tmpdir(), 'tmp.html');
     const rawHtml = await contentSelector.innerHTML();
-    // const downloadedFiles = await fs.readdir(options.output);
-    // for (const file of downloadedFiles.filter(name => name.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/))) {
-    //     console.log(file);
-    //     const src = new RegExp(`src="blob:.*${file}.*"`).exec(rawHtml);
-    //   //  await fs.rename(path.join(options.output, file), )
-    // }
     await fs.writeFile(tmpHtml, rawHtml)
 
     await browser.close();
