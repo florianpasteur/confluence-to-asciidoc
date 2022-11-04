@@ -7,7 +7,7 @@ const {existsSync} = require('fs');
 const yargs = require('yargs');
 const path = require('path');
 const os = require('os');
-const {launchBrowser} = require("./libs/utils");
+const {launchBrowser, wait} = require("./libs/utils");
 
 (async function () {
 
@@ -67,8 +67,7 @@ const {launchBrowser} = require("./libs/utils");
     const {page, browser} = await launchBrowser(options);
 
     await page.goto(options.import);
-    const titleSelector = await page.locator('#title-text').first();
-    const contentSelector = await page.locator('#content').first();
+
 
     const kebabCase = string => {
         return string.replace(/\W+/g, " ")
@@ -76,10 +75,54 @@ const {launchBrowser} = require("./libs/utils");
             .map(word => word.toLowerCase())
             .join('-');
     };
-    const title = await titleSelector.innerText();
+    const titleSelector = await page.locator('#title-text').first();
+    const title = kebabCase(await titleSelector.innerText()) || 'confluence-page';
+
+    await page.evaluate(async () => {
+        const download = async (url, name, i) => {
+            console.log("ddd");
+            new Promise(resolve =>  {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+
+                    a.download = name;
+                    a.href = url;
+                    a.style.display = 'none';
+                    a.target = '_blank';
+                    document.body.append(a);
+                    a.click();
+
+                    console.log("Download");
+
+                    resolve();
+                }, i * 30);
+            })
+        };
+
+        const jobs = []
+        document.querySelectorAll('#content img').forEach((image, index) => {
+            const filename = index + ".png";
+            jobs.push(download(image.src, filename, index))
+            //image.src = './' + filename;
+        })
+
+        return await Promise.all(jobs);
+    });
+
+    const nbOfImgs = await page.locator('#content img').count();
+    await wait(nbOfImgs * 60);
+    const contentSelector = await page.locator('#content').first();
+
 
     const tmpHtml = path.join(os.tmpdir(), 'tmp.html');
-    await fs.writeFile(tmpHtml, await contentSelector.innerHTML())
+    const rawHtml = await contentSelector.innerHTML();
+    // const downloadedFiles = await fs.readdir(options.output);
+    // for (const file of downloadedFiles.filter(name => name.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/))) {
+    //     console.log(file);
+    //     const src = new RegExp(`src="blob:.*${file}.*"`).exec(rawHtml);
+    //   //  await fs.rename(path.join(options.output, file), )
+    // }
+    await fs.writeFile(tmpHtml, rawHtml)
 
     await browser.close();
 

@@ -4,6 +4,7 @@ async function launchBrowser(options) {
     const chrome = await playwright.chromium.launch({
         headless: !(options.headed || Boolean(process.env.HEADED)),
         devtools: options.devtools || Boolean(process.env.DEVTOOLS),
+        downloadsPath: options.output
     });
     const context = await chrome.newContext({storageState: __dirname + '/../auth.json'});
     const page = await context.newPage();
