@@ -93,7 +93,8 @@ const {launchBrowser, wait} = require("./libs/utils");
 
         const imagesElements = Array.from(document.querySelectorAll('#content img')).filter(img => img.src.match(document.location.hostname));
         imagesElements.forEach((image, index) => {
-            const filename = index + ".png";
+            const ext = image.src.indexOf(".svg") ? ".svg" : ".png"
+            const filename = index + ext;
             createDownloadLink(image.src, filename, index)
             image.src = filename;
         })
@@ -108,7 +109,7 @@ const {launchBrowser, wait} = require("./libs/utils");
             link.click(),
         ]);
         await download.path();
-        await download.saveAs(path.join(options.output, i + '.png'));
+        await download.saveAs(path.join(options.output, await link.getAttribute('download')));
     }
 
     await page.evaluate(() => {
