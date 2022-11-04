@@ -78,39 +78,48 @@ const {launchBrowser, wait} = require("./libs/utils");
     const titleSelector = await page.locator('#title-text').first();
     const title = kebabCase(await titleSelector.innerText()) || 'confluence-page';
 
-    await page.evaluate(async () => {
-        const download = async (url, name, i) => {
-            console.log("ddd");
-            new Promise(resolve =>  {
-                setTimeout(() => {
-                    const a = document.createElement('a');
-
-                    a.download = name;
-                    a.href = url;
-                    a.style.display = 'none';
-                    a.target = '_blank';
-                    document.body.append(a);
-                    a.click();
-
-                    console.log("Download");
-
-                    resolve();
-                }, i * 30);
-            })
+    const nbOfImage = await page.evaluate(() => {
+        const createDownloadLink = (url, name, i) => {
+            const a = document.createElement('a');
+            const id = `playwright-download-${i}`;
+            a.id  = id
+            a.download = name;
+            a.innerHTML = id;
+            a.href = url;
+            //a.style.display = 'none';
+            a.target = '_blank';
+            document.querySelector('#title-text').parentElement.append(a);
         };
 
-        const jobs = []
-        document.querySelectorAll('#content img').forEach((image, index) => {
+        const imagesElements = Array.from(document.querySelectorAll('#content img')).filter(img => img.src.match(document.location.hostname));
+        imagesElements.forEach((image, index) => {
             const filename = index + ".png";
-            jobs.push(download(image.src, filename, index))
-            //image.src = './' + filename;
+            createDownloadLink(image.src, filename, index)
+            image.src = filename;
         })
 
-        return await Promise.all(jobs);
+        return imagesElements.length;
     });
 
-    const nbOfImgs = await page.locator('#content img').count();
-    await wait(nbOfImgs * 60);
+    for (let i = 0; i < nbOfImage; i++) {
+        const link= await page.locator(`#playwright-download-${i}`, {timeout: 5});
+        const [ download ] = await Promise.all([
+            page.waitForEvent('download'),
+            link.click(),
+        ]);
+        await download.path();
+        await download.saveAs(path.join(options.output, i + '.png'));
+    }
+
+    await page.evaluate(() => {
+        // delete icon wrapper
+        document.querySelectorAll('#iconWrapper').forEach(e => {
+            e.remove();
+            debugger
+        })
+        debugger
+    });
+
     const contentSelector = await page.locator('#content').first();
 
 
